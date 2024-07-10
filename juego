@@ -1,0 +1,82 @@
+import pygame
+pygame.init()
+
+# Configurar la pantalla
+screen = pygame.display.set_mode((800, 500))
+clock = pygame.time.Clock()
+pygame.mouse.set_visible(0)
+background = pygame.image.load("FONDO.jpeg").convert()# Cargar la imagen de fondo
+pygame.display.set_caption('Ejemplo de Movimiento y Texto en Pygame')
+# Configurar la fuente y el texto
+fuente = pygame.font.Font(None, 40)  # None usa la fuente por defecto, 40 es el tamaño
+texto = fuente.render('JUEGO INSANO °o° ', True, (255, 255, 255))
+rect_texto = texto.get_rect(topleft=(500, 50))
+
+# Coordenadas del cuadrado
+coord_x = 10
+coord_y = 400
+# Velocidad
+x_speed = 0
+y_speed = 0
+
+# Lista para almacenar las posiciones de los disparos
+disparos = []
+cuadrados = []
+
+# Bucle principal del juego
+salir = False
+while not salir:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            salir = True
+        # Eventos teclado
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                salir = True
+            if event.key == pygame.K_LEFT:
+                x_speed = -6
+            if event.key == pygame.K_RIGHT:
+                x_speed = 6
+            if event.key == pygame.K_UP:
+                y_speed = -6
+            if event.key == pygame.K_DOWN:
+                y_speed = 6
+            if event.key == pygame.K_SPACE:
+                disparos.append((coord_x, coord_y))  # Añadir la posición actual a la lista de disparos
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                x_speed = 0
+            if event.key == pygame.K_RIGHT:
+                x_speed = 0
+            if event.key == pygame.K_UP:
+                y_speed = 0
+            if event.key == pygame.K_DOWN:
+                y_speed = 0
+
+    mouse_pos = pygame.mouse.get_pos()
+    # Mover el cuadrado
+    coord_x += x_speed
+    coord_y += y_speed
+    x = mouse_pos[0]
+    y = mouse_pos[1]
+    # Dibujar la imagen de fondo
+    screen.blit(background, (-400,-500))
+    # Dibujar los disparos
+    pygame.draw.rect(screen, (255, 0, 0), (x, y, 100, 100))
+    mouse_buttons = pygame.mouse.get_pressed()
+    if mouse_buttons[0]:  # Botón izquierdo del ratón
+        pos = pygame.mouse.get_pos()
+        cuadrados.append(pygame.Rect(pos[0], pos[1], 50, 50))
+    for disparo in disparos:
+        for i in range(0, 200, 40):
+            pygame.draw.rect(screen, (255, 0, 0), (int(disparo[0]) + i, disparo[1], 30, 30))
+
+    # Dibujar el cuadrado principal
+    screen.blit(texto, rect_texto)
+    pygame.draw.rect(screen, (255, 0, 0), (coord_x, coord_y, 100, 100))
+
+    # Actualizar la pantalla
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
